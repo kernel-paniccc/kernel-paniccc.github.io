@@ -107,3 +107,14 @@ footer { margin-top: 3rem; text-align: right; }
 }
 
 @media print { header, article, article:first-of-type { background: white; } header::before { display: none; } main, #projects { display: block; } }
+
+@media screen {
+  [role="tabpanel"][hidden] { display: none !important; }
+  main > [role="tabpanel"] { grid-column: 1 / -1; }
+  nav[role="tablist"] { gap: .35rem; border: none; }
+  [role="tab"] { padding: .4rem .9rem; border-radius: 2rem; }
+  [role="tab"][aria-selected="true"] { background: var(--accent); color: var(--paper); }
+}
+@media print {
+  main > [role="tabpanel"][hidden] { display: block !important; }
+}

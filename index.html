@@ -44,5 +44,60 @@
   </section>
 </main>
 <footer><a href="#top">Back to top</a></footer>
+<script>
+  const navigation = document.querySelector('nav[aria-label="Sections"]');
+  const tabs = Array.from(navigation.querySelectorAll('a'));
+  const panels = tabs.map(tab => document.getElementById(tab.hash.slice(1)));
+  navigation.setAttribute('role', 'tablist');
+
+  function selectTab(index) {
+    tabs.forEach((tab, i) => {
+      const selected = i === index;
+      tab.setAttribute('aria-selected', String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      panels[i].hidden = !selected;
+    });
+  }
+
+  function readLocation() {
+    selectTab(Math.max(0, tabs.findIndex(tab => tab.hash === location.hash)));
+  }
+
+  function openTab(index) {
+    const tab = tabs[index];
+    if (location.hash !== tab.hash) history.pushState(null, '', tab.hash);
+    selectTab(index);
+    tab.focus({preventScroll: true});
+  }
+
+  tabs.forEach((tab, i) => {
+    const panel = panels[i];
+    tab.id = 'tab-' + panel.id;
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-controls', panel.id);
+    panel.setAttribute('role', 'tabpanel');
+    panel.setAttribute('aria-labelledby', tab.id);
+    panel.tabIndex = 0;
+    tab.addEventListener('click', event => {
+      if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+      event.preventDefault();
+      openTab(i);
+    });
+    tab.addEventListener('keydown', event => {
+      const targets = {
+        ArrowRight: (i + 1) % tabs.length,
+        ArrowLeft: (i + tabs.length - 1) % tabs.length,
+        Home: 0,
+        End: tabs.length - 1
+      };
+      if (!(event.key in targets) && event.key !== ' ') return;
+      event.preventDefault();
+      openTab(targets[event.key] ?? i);
+    });
+  });
+  window.addEventListener('popstate', readLocation);
+  window.addEventListener('hashchange', readLocation);
+  readLocation();
+</script>
 </body>
 </html>
